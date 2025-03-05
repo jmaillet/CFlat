@@ -1,11 +1,12 @@
-﻿namespace CFlat;
+namespace CFlat;
 
 public enum TokenType
 {
-  NumberLiteral,
-  Identifier,
 
-  Keyword,
+  NumberLiteral,
+  // Identifier,
+
+  // Keyword,
   Whitespace,
   StringLiteral,
 
@@ -14,31 +15,31 @@ public enum TokenType
   Minus,
   Star,
   Slash,
-  Percent,
-  Bang,
+  // Percent,
+  // Bang,
   LessThan,
   GreaterThan,
   LessThanOrEqual,
   GreaterThanOrEqual,
   Equal,
-  DoubleEqual,
-  NotEqual,
-  Ampersand,
-  Pipe,
-  DoubleAmpersand,
-  DoublePipe,
-  QuestionMark,
-  Colon,
-  SemiColon,
+  // DoubleEqual,
+  // NotEqual,
+  // Ampersand,
+  // Pipe,
+  // DoubleAmpersand,
+  // DoublePipe,
+  // QuestionMark,
+  // Colon,
+  // SemiColon,
 
   // Delimiters
   OpenParen,
   CloseParen,
-  OpenBrace,
-  CloseBrace,
-  OpenBracket,
-  CloseBracket,
+  // OpenBrace,
+  // CloseBrace,
+  // OpenBracket,
+  // CloseBracket,
 
-  // Error
-  Unknown
+   // End of file
+  Eof
 }
