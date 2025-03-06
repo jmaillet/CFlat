@@ -1,9 +1,15 @@
 ﻿using CFlat;
-
+using System.Text.Json;
 var text = """
-45
+45;
 """;
 
 var parser = new Parser(text);
 var ast = parser.Parse();
-Console.WriteLine(ast); 
+
+var options = new JsonSerializerOptions
+{
+    WriteIndented = true
+};
+
+Console.WriteLine(JsonSerializer.Serialize(ast, options)); 

@@ -3,12 +3,12 @@ namespace CFlat;
 public enum TokenType
 {
 
-  NumberLiteral,
+  Number,
   // Identifier,
 
   // Keyword,
   Whitespace,
-  StringLiteral,
+  String,
 
   // Operators
   Plus,
@@ -30,7 +30,7 @@ public enum TokenType
   // DoublePipe,
   // QuestionMark,
   // Colon,
-  // SemiColon,
+  SemiColon,
 
   // Delimiters
   OpenParen,

@@ -3,7 +3,7 @@ namespace CFlat;
 
 public class Parser
 {
-  private readonly Tokenizer _lexer;
+  private readonly Tokenizer _tokenizer;
   private List<Token> _tokens;
   private int _position;
 
@@ -12,8 +12,8 @@ public class Parser
 
   public Parser(string source)
   {
-    _lexer = new Tokenizer(source);
-    _tokens = _lexer.Tokenize();
+    _tokenizer = new Tokenizer(source);
+    _tokens = _tokenizer.Tokenize();
   }
 
   public AstNode Parse()
@@ -21,19 +21,46 @@ public class Parser
     return ParseProgram();
     throw new Exception($"Unexpected token: {Current.Text}");
   }
+
+  /// <summary>
+  /// Program
+  //    : StatementList -> Statement*
+  ///   ;
+  ///  
+  /// </summary>
+  /// <returns></returns>
   private RootNode ParseProgram()
   {
-    var body = new List<AstNode>();
-
-    return new RootNode(ParseNumberLiteral());
+    return new RootNode(ParseStatementList());
   }
 
-  private 
-
-
-  private AstNode ParseNumberLiteral()
+  private List<AstNode> ParseStatementList()
   {
-    var token = Match(TokenType.NumberLiteral);
+    
+    var statements = new List<AstNode>();
+    while (Current.Type != TokenType.Eof)
+    {
+      statements.Add(ParseStatement());
+    }
+    return statements;
+  }
+
+    private AstNode ParseStatement()
+    {
+        return ParseExpressionStatement();
+
+    }
+
+    private AstNode ParseExpressionStatement()
+    {
+        var expression = ParseNumberLiteral();
+        _ = Match(TokenType.SemiColon);
+        return new ExpressionStatementNode(NodeType.ExpressionStatement, expression);
+    }
+
+    private AstNode ParseNumberLiteral()
+  {
+    var token = Match(TokenType.Number);
     return new NumberLiteralExpression(int.Parse(token.Text));
   }
 

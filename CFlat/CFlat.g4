@@ -3,31 +3,39 @@ grammar CFlat;
 
 
 // Define number rule
-Number
+NUMBER
     :
     [0-9]+ ('.' [0-9]+)?
     ;
 
+STRING
+    :
+    '"' (~["\\])* '"'
+    ;
+
+OPERATOR
+    : '+' | '-' | '*' | '/' | '%' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '&&' | '||'
+    ;
+
+DELIMITER
+    : '(' | ')' | '{' | '}' | '[' | ']' | ',' | ';' | '='
+    ;
 
 
 
+literal
+    : NUMBER
+    | STRING
+    ;
 
-// Define keywords
-keywords:
-    'bool' | 'false' | 'foreach' |  'number' | 'interface' | 'string' | 'match' | 'true' | 'import' | 'from'; 
+program
+    : (statement)*
+    ;
 
-// Define identifier rule
-identifier:
-    LetterOrUnderscore (LetterOrDigitOrUnderscore)*;
+statement
+    : expressionStatement';'
+    ;
 
-// Define letter or underscore rule
-LetterOrUnderscore:
-    [a-zA-Z_];
-
-// Define letter or digit or underscore rule
-LetterOrDigitOrUnderscore:
-    [a-zA-Z0-9_];
-
-// Define whitespace rule
-WS:
-    [ \t\r\n] -> skip;
+expressionStatement
+    : literal
+    ;

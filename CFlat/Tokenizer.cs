@@ -6,9 +6,11 @@ public class Tokenizer(string text)
   private readonly string _text = text ?? throw new ArgumentNullException(nameof(text));
 
   private readonly List<Rule> _rules = [
-    new Rule(new Regex(@"\d+(\.\d+)?"), TokenType.NumberLiteral),
+    new Rule(new Regex(@"\d+(\.\d+)?"), TokenType.Number),
     new Rule(new Regex(@"\s+"), TokenType.Whitespace),
-    new Rule(new Regex(@"""[^""]*"""), TokenType.StringLiteral),
+    new Rule(new Regex(@"""[^""]*"""), TokenType.String),
+    new Rule(new Regex(@";"), TokenType.SemiColon),
+
   ];
   private int _position;
 

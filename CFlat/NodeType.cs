@@ -2,6 +2,9 @@
 
 public enum NodeType
 {
+
+  // Statements
+  ExpressionStatement,
   // Expressions
   NumberLiteralExpression,
   StringLiteralExpression,
