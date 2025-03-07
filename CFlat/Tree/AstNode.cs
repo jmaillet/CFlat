@@ -1,11 +1,6 @@
-﻿namespace CFlat;
-public abstract record AstNode(NodeType SyntaxType)
+﻿namespace CFlat.Tree;
+public abstract record AstNode()
 {
-
+  public abstract IEnumerable<AstNode> GetChildren();
 }
 
-public abstract record StatementNode(NodeType SyntaxType) : AstNode(SyntaxType)
-{
-
-}
- public record ExpressionStatementNode(NodeType SyntaxType, AstNode Expression) : StatementNode(SyntaxType);

@@ -1,3 +1,8 @@
-﻿namespace CFlat;
+﻿using CFlat.Tree;
 
-public record Token(TokenType Type, string Text); 
+namespace CFlat;
+
+public record Token(TokenType Type, string Text, int Position) : AstNode
+{
+  public override IEnumerable<AstNode> GetChildren() => [];
+}

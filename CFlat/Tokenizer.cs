@@ -1,17 +1,19 @@
-﻿using System.Text.RegularExpressions;
-
-namespace CFlat;
+﻿namespace CFlat;
 public class Tokenizer(string text)
 {
   private readonly string _text = text ?? throw new ArgumentNullException(nameof(text));
 
   private readonly List<Rule> _rules = [
-    new Rule(new Regex(@"\d+(\.\d+)?"), TokenType.Number),
-    new Rule(new Regex(@"\s+"), TokenType.Whitespace),
-    new Rule(new Regex(@"""[^""]*"""), TokenType.String),
-    new Rule(new Regex(@";"), TokenType.SemiColon),
-
+    new Rule(new(@"\d+(\.\d+)?"), TokenType.Number),
+    new Rule(new(@"\s+"), TokenType.Whitespace),
+   // new Rule(new Regex(@"""[^""]*"""), TokenType.String),
+    new Rule(new(@"\+"), TokenType.Plus),
+    new Rule(new(@"-"), TokenType.Minus),
+    new Rule(new(@"\*"), TokenType.Star),
+    new Rule(new(@"/"), TokenType.Slash),
+    new Rule(new(@";"), TokenType.SemiColon),
   ];
+
   private int _position;
 
   private char Peek(int offset = 0) => _position + offset < _text.Length ? _text[_position + offset] : '\0';
@@ -23,19 +25,24 @@ public class Tokenizer(string text)
     var tokens = new List<Token>();
     while (Current != '\0')
     {
+      var found = false;
       foreach (var rule in _rules)
       {
         var match = rule.Pattern.Match(_text, _position);
         if (match.Success && match.Index == _position)
         {
-          tokens.Add(new Token(rule.Type, match.Value));
+          found = true;
+          tokens.Add(new Token(rule.Type, match.Value, _position));
           _position += match.Length;
           break;
         }
       }
-
-
+      if (!found)
+      {
+        throw new Exception($"Unexpected character: `{Current}` at position {_position}");
+      }
     }
+
     return tokens;
   }
 
@@ -48,7 +55,7 @@ public class Tokenizer(string text)
   //   }
   //   var number = _text[start.._position];
 
-   
+
   //   return new Token(TokenType.NumberLiteral, number);
   // }
 

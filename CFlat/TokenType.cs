@@ -17,10 +17,10 @@ public enum TokenType
   Slash,
   // Percent,
   // Bang,
-  LessThan,
-  GreaterThan,
-  LessThanOrEqual,
-  GreaterThanOrEqual,
+  //LessThan,
+  //GreaterThan,
+  //LessThanOrEqual,
+  //GreaterThanOrEqual,
   Equal,
   // DoubleEqual,
   // NotEqual,
@@ -40,6 +40,6 @@ public enum TokenType
   // OpenBracket,
   // CloseBracket,
 
-   // End of file
+  // End of file
   Eof
 }

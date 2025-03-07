@@ -1,19 +1,24 @@
-﻿
+﻿using CFlat.Tree;
+
 namespace CFlat;
 
-public class Parser
+internal class Parser
 {
   private readonly Tokenizer _tokenizer;
   private List<Token> _tokens;
   private int _position;
+  private readonly string _source;
 
   private Token Current => Peek();
-  private Token Peek(int offset = 0) => _position + offset < _tokens.Count ? _tokens[_position + offset] : new Token(TokenType.Eof, string.Empty);
+  private Token Peek(int offset = 0) => _position + offset < _tokens.Count
+    ? _tokens[_position + offset]
+    : new Token(TokenType.Eof, string.Empty, _source.Length);
 
   public Parser(string source)
   {
     _tokenizer = new Tokenizer(source);
     _tokens = _tokenizer.Tokenize();
+    _source = source;
   }
 
   public AstNode Parse()
@@ -22,48 +27,39 @@ public class Parser
     throw new Exception($"Unexpected token: {Current.Text}");
   }
 
-  /// <summary>
-  /// Program
-  //    : StatementList -> Statement*
-  ///   ;
-  ///  
-  /// </summary>
-  /// <returns></returns>
   private RootNode ParseProgram()
   {
-    return new RootNode(ParseStatementList());
+    return new RootNode(ParseExpression());
   }
 
-  private List<AstNode> ParseStatementList()
+  private AstNode ParseExpression()
   {
-    
-    var statements = new List<AstNode>();
-    while (Current.Type != TokenType.Eof)
+    var left = ParseNumberLiteral();
+    if (Current.Type == TokenType.SemiColon)
     {
-      statements.Add(ParseStatement());
+      return left;
     }
-    return statements;
+    var operatorToken = ParseOperator();
+    var right = ParseExpression();
+
+    return new BinaryExpression(left, right, operatorToken);
   }
 
-    private AstNode ParseStatement()
-    {
-        return ParseExpressionStatement();
-
-    }
-
-    private AstNode ParseExpressionStatement()
-    {
-        var expression = ParseNumberLiteral();
-        _ = Match(TokenType.SemiColon);
-        return new ExpressionStatementNode(NodeType.ExpressionStatement, expression);
-    }
-
-    private AstNode ParseNumberLiteral()
+  private AstNode ParseNumberLiteral()
   {
     var token = Match(TokenType.Number);
     return new NumberLiteralExpression(int.Parse(token.Text));
   }
 
+  private Token ParseOperator()
+  {
+    if (Current.Type is TokenType.Plus or TokenType.Minus or TokenType.Star or TokenType.Slash)
+    {
+      return (Token)NextToken();
+    }
+    throw new Exception($"Unexpected token: {Current.Text}");
+
+  }
 
   private Token NextToken()
   {

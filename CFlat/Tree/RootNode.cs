@@ -1,7 +1,6 @@
-﻿namespace CFlat;
+﻿namespace CFlat.Tree;
 
-internal record RootNode(List<AstNode> Body) : AstNode(NodeType.Program);
-
-
-
-
+internal record RootNode(AstNode Body) : AstNode
+{
+  public override IEnumerable<AstNode> GetChildren() => [Body];
+}
