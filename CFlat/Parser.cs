@@ -55,7 +55,7 @@ internal class Parser
   {
     if (Current.Type is TokenType.Plus or TokenType.Minus or TokenType.Star or TokenType.Slash)
     {
-      return (Token)NextToken();
+      return NextToken();
     }
     throw new Exception($"Unexpected token: {Current.Text}");
 
