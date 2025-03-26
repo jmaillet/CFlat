@@ -5,7 +5,7 @@ namespace CFlat;
 internal class Parser
 {
   private readonly Tokenizer _tokenizer;
-  private List<Token> _tokens;
+  private List<Token> _tokens = [];
   private int _position;
   private readonly string _source;
 
@@ -17,51 +17,125 @@ internal class Parser
   public Parser(string source)
   {
     _tokenizer = new Tokenizer(source);
-    _tokens = _tokenizer.Tokenize();
     _source = source;
   }
 
-  public AstNode Parse()
+  public Root Parse()
   {
-    return ParseProgram();
-    throw new Exception($"Unexpected token: {Current.Text}");
-  }
 
-  private RootNode ParseProgram()
-  {
-    return new RootNode(ParseExpression());
-  }
-
-  private AstNode ParseExpression()
-  {
-    var left = ParseNumberLiteral();
-    if (Current.Type == TokenType.SemiColon)
+    _tokens = _tokenizer.Tokenize().Where(t => t.Type != TokenType.Whitespace).ToList();
+    var root = new Root();
+    while (Current.Type != TokenType.Eof)
     {
-      return left;
+      var statement = ParseStatement();
+      if (statement != null)
+      {
+        root.Body.Add(statement);
+      }
     }
-    var operatorToken = ParseOperator();
-    var right = ParseExpression();
-
-    return new BinaryExpression(left, right, operatorToken);
+    return root;
   }
 
-  private AstNode ParseNumberLiteral()
+  private Statement ParseStatement()
+  {
+    return Current.Type switch
+    {
+      TokenType.Let => ParseAssignment(),
+      _ => ParseExpressionStatement()
+
+    };
+  }
+
+  private AssignmentStatement ParseAssignment()
+  {
+    _ = Match(TokenType.Let);
+    var identifier = Match(TokenType.Identifier);
+    _ = Match(TokenType.Equal);
+    var expression = ParseExpression();
+    _ = Match(TokenType.SemiColon);
+    return new AssignmentStatement(identifier, expression);
+  }
+
+  private ExpressionStatement ParseExpressionStatement()
+  {
+    var expression = ParseExpression();
+    _ = Match(TokenType.SemiColon);
+    return new ExpressionStatement(expression);
+  }
+
+  private Expression ParsePrimaryExpression()
+  {
+    return Current.Type switch
+    {
+      TokenType.Number => ParseNumberLiteral(),
+      TokenType.String => ParseStringLiteral(),
+      TokenType.OpenParen => ParseParenthesizedExpression(),
+      TokenType.Minus => ParseUnaryExpression(),
+      TokenType.Identifier => ParseIdentifier(),
+      _ => throw new Exception($"Unexpected token {Current.Type}")
+    };
+  }
+
+  private IdentifierExpression ParseIdentifier() => new(Match(TokenType.Identifier));
+
+  private UnaryExpression ParseUnaryExpression()
+  {
+    var operatorToken = Match(TokenType.Minus);
+    var operand = ParsePrimaryExpression();
+    return new UnaryExpression(operatorToken, operand);
+  }
+
+  private Expression ParseParenthesizedExpression()
+  {
+    _ = Match(TokenType.OpenParen);
+    var expression = ParseExpression();
+    _ = Match(TokenType.CloseParen);
+    return expression;
+  }
+
+  private StringLiteralExpression ParseStringLiteral()
+  {
+    var token = Match(TokenType.String);
+    return new StringLiteralExpression(token, token.Text);
+  }
+
+  private Expression ParseExpression() => ParseAdditiveExpression();
+
+  private Expression ParseAdditiveExpression()
+  {
+    var left = ParseMultiplicativeExpression();
+    while (Current.Type is TokenType.Plus or TokenType.Minus)
+    {
+      var op = Match(TokenType.Plus, TokenType.Minus);
+      var right = ParseMultiplicativeExpression();
+      left = new BinaryExpression(left, op, right);
+    }
+
+    return left;
+  }
+
+  private Expression ParseMultiplicativeExpression()
+  {
+    var left = ParsePrimaryExpression();
+
+    while (Current.Type is TokenType.Star or TokenType.Slash)
+    {
+      var token = Match(TokenType.Slash);
+      var right = ParsePrimaryExpression();
+      left = new BinaryExpression(left, token, right);
+    }
+
+    return left;
+
+  }
+
+  private Expression ParseNumberLiteral()
   {
     var token = Match(TokenType.Number);
-    return new NumberLiteralExpression(int.Parse(token.Text));
+    return new IntegerLiteralExpression(token, int.Parse(token.Text));
   }
 
-  private Token ParseOperator()
-  {
-    if (Current.Type is TokenType.Plus or TokenType.Minus or TokenType.Star or TokenType.Slash)
-    {
-      return NextToken();
-    }
-    throw new Exception($"Unexpected token: {Current.Text}");
-
-  }
-
-  private Token NextToken()
+  private Token Eat()
   {
     var token = Current;
     _position++;
@@ -74,6 +148,17 @@ internal class Parser
     {
       throw new Exception($"Expected token of type {type}, but got {Current.Type}");
     }
-    return NextToken();
+
+    return Eat();
+  }
+
+  private Token Match(params TokenType[] types)
+  {
+    if (!types.Contains(Current.Type))
+    {
+      throw new Exception($"Expected one of {string.Join(", ", types)}, but got {Current.Type}");
+    }
+
+    return Eat();
   }
 }

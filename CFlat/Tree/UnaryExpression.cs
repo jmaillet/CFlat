@@ -1,5 +1,4 @@
 ﻿namespace CFlat.Tree;
 
-public record ExpressionNode
-{
-}
+public record UnaryExpression(Token OperatorToken, AstNode Operand) : Expression;
+

@@ -4,11 +4,18 @@ public enum TokenType
 {
 
   Number,
-  // Identifier,
-
-  // Keyword,
+  Identifier,
   Whitespace,
   String,
+
+  //Keywords
+  Let,
+  Fn,
+  Return,
+  If,
+  Else,
+  True,
+  False,
 
   // Operators
   Plus,
@@ -39,6 +46,7 @@ public enum TokenType
   // CloseBrace,
   // OpenBracket,
   // CloseBracket,
+  BadToken,
 
   // End of file
   Eof
