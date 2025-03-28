@@ -1,24 +1,18 @@
-﻿using CFlat.Tree;
+﻿using CFlat.Syntax;
 
 namespace CFlat;
 
-internal class Parser
+internal class Parser(string source)
 {
-  private readonly Tokenizer _tokenizer;
+  private readonly Tokenizer _tokenizer = new(source);
   private List<Token> _tokens = [];
   private int _position;
-  private readonly string _source;
+  private readonly string _source = source;
 
   private Token Current => Peek();
   private Token Peek(int offset = 0) => _position + offset < _tokens.Count
     ? _tokens[_position + offset]
     : new Token(TokenType.Eof, string.Empty, _source.Length);
-
-  public Parser(string source)
-  {
-    _tokenizer = new Tokenizer(source);
-    _source = source;
-  }
 
   public Root Parse()
   {

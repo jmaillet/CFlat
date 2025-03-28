@@ -1,3 +1,3 @@
-﻿namespace CFlat.Tree;
+﻿namespace CFlat.Syntax;
 
 public abstract record Expression : Statement;

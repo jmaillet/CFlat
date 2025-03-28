@@ -1,4 +1,4 @@
-﻿namespace CFlat.Tree;
+﻿namespace CFlat.Syntax;
 
 public record Root : AstNode
 {

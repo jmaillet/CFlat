@@ -23,7 +23,7 @@ public enum TokenType
   Star,
   Slash,
   // Percent,
-  // Bang,
+  Bang,
   //LessThan,
   //GreaterThan,
   //LessThanOrEqual,

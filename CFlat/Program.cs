@@ -1,5 +1,5 @@
 ﻿using CFlat;
-using CFlat.Tree;
+using CFlat.Syntax;
 
 var text = """
 45 + 3 + 6;
